@@ -3,29 +3,9 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const User = db.User;
 const config = require('../config/secret')
-var multer = require('multer');
 
-var storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    return cb(null, './public/images');
-  },
-  filename: (req, file, cb) => {
-    var filetype = '';
-    if (file.mimetype === 'image/gif') {
-      filetype = 'gif';
-    }
-    if (file.mimetype === 'image/png') {
-      filetype = 'png';
-    }
-    if (file.mimetype === 'image/jpeg') {
-      filetype = 'jpg';
-    }
-    cb(null, 'image-' + Date.now() + '.' + filetype);
-  }
-});
-var upload = multer({ storage: storage });
 exports.register = function (req, res) {
-  if (!req.body.phone || !req.body.password || !req.body.name) {
+  if (!req.body.phone || !req.body.password || !req.body.name || !req.body.photo || !req.body.desc) {
     return res.json({
       success: false,
       message: "Invalid params"
@@ -35,6 +15,8 @@ exports.register = function (req, res) {
   User.create({
     name: req.body.name,
     phone: req.body.phone,
+    desc: req.body.desc,
+    photo: req.body.photo,
     password: hashedPassword
   }).then(function (users) {
     if (users) {
@@ -87,4 +69,10 @@ exports.login = function (req, res) {
   });
 }
 
-exports.upload = 
+exports.upload = (req, res, next) =>{
+  if (!req.file) {
+    res.status(200);
+    return res.json({success: false, message: 'An error occurred!'});
+  }
+  return res.json({ fileUrl: `http://localhost:8080/images/` + req.file.filename });
+}

@@ -7,6 +7,7 @@ const db = require('./models');
 const User = db.User;
 const app = express()
 
+app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }))
 db.sequelize.sync({ force: false })
 app.use(bodyParser.json())
