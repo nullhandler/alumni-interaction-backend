@@ -13,5 +13,7 @@ db.sequelize.sync({ force: false })
 app.use(bodyParser.json())
 
 require('./auth/auth.routes')(app)
+require('./api/post.routes')(app)
+require('./api/comment.routes')(app)
 
 module.exports = app
