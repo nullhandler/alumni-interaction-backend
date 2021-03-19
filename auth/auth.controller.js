@@ -74,5 +74,5 @@ exports.upload = (req, res, next) =>{
     res.status(200);
     return res.json({success: false, message: 'An error occurred!'});
   }
-  return res.json({ fileUrl: `http://localhost:8080/images/` + req.file.filename });
+  return res.json({ fileUrl: `/images/` + req.file.filename });
 }

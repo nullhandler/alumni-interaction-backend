@@ -46,7 +46,7 @@ exports.getPosts = (req, res) => {
   var token = req.headers['token']
   jwt.verify(token, config.secret, function (err, decoded) {
     if (err) return res.status(200).send({ success: false, message: 'Failed to authenticate token' });
-    Post.findAll({ attributes: ['title', 'category'], include: [{ model: db.User, as: 'author', attributes: ['name', 'photo'] }] }).then((posts) => {
+    Post.findAll({ attributes: ['title', 'category', 'id'], include: [{ model: db.User, as: 'author', attributes: ['name', 'photo'] }] }).then((posts) => {
       return res.json({
         success: true,
         posts: posts
@@ -64,7 +64,7 @@ exports.getPosts = (req, res) => {
 }
 
 exports.getPostDetail = (req, res) => {
-  if(!req.body.postId){
+  if(!req.query.postId){
     return res.json({
       success: false,
       message: "Invalid params"
@@ -73,7 +73,7 @@ exports.getPostDetail = (req, res) => {
   var token = req.headers['token']
   jwt.verify(token, config.secret, function (err, decoded) {
     if (err) return res.status(200).send({ success: false, message: 'Failed to authenticate token' });
-    Post.findOne({where: {id: req.body.postId}, include: [{model: db.User, as: 'author', attributes: ['name', 'photo']}, {model: db.Comment, as: 'comments', include: {model: db.User, as: 'author', attributes: ['name', 'photo']}}]}).then((post) => {
+    Post.findOne({where: {id: req.query.postId}, include: [{model: db.User, as: 'author', attributes: ['name', 'photo']}, {model: db.Comment, as: 'comments', include: {model: db.User, as: 'author', attributes: ['name', 'photo']}}]}).then((post) => {
       if(!post){
         return res.json({
           success: false,
