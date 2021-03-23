@@ -46,7 +46,7 @@ exports.getPosts = (req, res) => {
   var token = req.headers['token']
   jwt.verify(token, config.secret, function (err, decoded) {
     if (err) return res.status(200).send({ success: false, message: 'Failed to authenticate token' });
-    Post.findAll({ attributes: ['title', 'category', 'id'], include: [{ model: db.User, as: 'author', attributes: ['name', 'photo'] }] }).then((posts) => {
+    Post.findAll({ attributes: ['title', 'category', 'id', 'createdAt'], include: [{ model: db.User, as: 'author', attributes: ['name', 'photo'] }] , order: [['createdAt', 'DESC']]}).then((posts) => {
       return res.json({
         success: true,
         posts: posts
