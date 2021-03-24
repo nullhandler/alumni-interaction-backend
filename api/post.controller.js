@@ -73,7 +73,7 @@ exports.getPostDetail = (req, res) => {
   var token = req.headers['token']
   jwt.verify(token, config.secret, function (err, decoded) {
     if (err) return res.status(200).send({ success: false, message: 'Failed to authenticate token' });
-    Post.findOne({where: {id: req.query.postId}, include: [{model: db.User, as: 'author', attributes: ['name', 'photo']}, {model: db.Comment, as: 'comments', include: {model: db.User, as: 'author', attributes: ['name', 'photo']}}]}).then((post) => {
+    Post.findOne({where: {id: req.query.postId}, include: [{model: db.User, as: 'author', attributes: ['name', 'photo', 'phone']}, {model: db.Comment, as: 'comments', include: {model: db.User, as: 'author', attributes: ['name', 'photo', 'phone']}}]}).then((post) => {
       if(!post){
         return res.json({
           success: false,
@@ -96,7 +96,7 @@ exports.getPostDetail = (req, res) => {
 }
 
 exports.getUser = (req, res)=>{
-  if(!req.body.userId){
+  if(!req.query.userId){
     return res.json({
       success: false,
       message: "Invalid params"
@@ -105,7 +105,13 @@ exports.getUser = (req, res)=>{
   var token = req.headers['token']
   jwt.verify(token, config.secret, function (err, decoded) {
     if (err) return res.status(200).send({ success: false, message: 'Failed to authenticate token' });
-    db.User.findOne({id: req.body.userId, attributes: {exclude: ['password']}}).then(function (user){
+    db.User.findOne({where: {phone: req.query.userId}, attributes: {exclude: ['password']}}).then(function (user){
+      if(!user){
+        return res.json({
+          success: false,
+          message: "Cant find user"
+        })
+      }
       return res.json({
         success: true,
         user: user
